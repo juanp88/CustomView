@@ -1,13 +1,12 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:toggle_view/Ui/widgets/show_image.dart';
 
 import '../view_model/details_view_model.dart';
 
-class UniversityDetails extends StatelessWidget {
+class UniversityDetails extends StatefulWidget {
   final String country;
   final String state;
   final String name;
@@ -22,65 +21,104 @@ class UniversityDetails extends StatelessWidget {
       : super(key: key);
 
   @override
+  State<UniversityDetails> createState() => _UniversityDetailsState();
+}
+
+class _UniversityDetailsState extends State<UniversityDetails> {
+  String number = '';
+
+  //TextEditingController controller2;
+  late TextEditingController _controller;
+  @override
   Widget build(BuildContext context) {
-    final picker = ImagePicker();
-    File _image;
     final detailsProvider =
         Provider.of<DetailsViewModel>(context, listen: true);
 
-    Future _seleccionfoto() async {
-      final XFile? pickedFile =
-          await picker.pickImage(source: ImageSource.gallery);
-      if (pickedFile != null) {
-        detailsProvider.setImage(File(pickedFile.path));
-        detailsProvider.fotoSelecctionada(true);
-      } else {
-        print('No image selected.');
-      }
+    @override
+    void initState() {
+      _controller = TextEditingController();
+      super.initState();
     }
 
-    Future _tomarfoto() async {
-      final XFile? pickedFile =
-          await picker.pickImage(source: ImageSource.camera);
-
-      if (pickedFile != null) {
-        detailsProvider.setImage(File(pickedFile.path));
-        // detailsProvider.fotoSelecctionada(false);
-      } else {
-        print('No image selected.');
-      }
+    void dispose() {
+      _controller.dispose();
+      // controller2.dispose();
+      super.dispose();
     }
 
     return Scaffold(
         appBar: AppBar(
-          title: Text(name),
+          title: Text(widget.name),
           actions: [
             IconButton(
-              icon: Icon(Icons.photo_album),
-              onPressed: _seleccionfoto,
+              icon: const Icon(Icons.photo_album),
+              onPressed: () => detailsProvider.seleccionfoto(),
             ),
-            IconButton(icon: Icon(Icons.camera), onPressed: _tomarfoto),
+            IconButton(
+                icon: const Icon(Icons.camera),
+                onPressed: () => detailsProvider.tomarfoto()),
           ],
         ),
         body: Card(
           child: Column(
             children: [
-              const Expanded(
+              Expanded(
                 flex: 3,
                 child: Center(
-                  child: ShowImage(),
+                  child: (detailsProvider.fotoSelecctionada == true)
+                      ? Image(
+                          image: FileImage(File(detailsProvider.image.path)))
+                      : const Image(image: AssetImage('assets/no-image.png')),
                 ),
               ),
               Expanded(
                   flex: 2,
                   child: Column(
                     children: [
-                      Text('University: $name'),
-                      Text('Country: $country'),
-                      Text('State: $state'),
-                      Text('Web Page: $webPage')
+                      Text('University: ${widget.name}'),
+                      Text('Country: ${widget.country}'),
+                      Text('State: ${widget.state}'),
+                      Text('Web Page: ${widget.webPage}'),
+                      Text('Numer of Students:  $number')
                     ],
                   )),
+              Expanded(
+                  child: ListTile(
+                // trailing: TextButton(
+                //     onPressed: () => detailsProvider
+                //         .setNumberOfStudentents(controller.value.text),
+                //     child: const Text('Submit')),
+                title: TextField(
+                  //  controller: controller,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  decoration: InputDecoration(
+                    hintText: 'Enter a message',
+                    suffixIcon: IconButton(
+                      onPressed: () {
+                        _controller.text = '';
+                        _controller.clear();
+                        setState(() {});
+                      },
+                      icon: const Icon(Icons.clear),
+                    ),
+                  ),
+                  onChanged: (text) {
+                    setState(() {
+                      // _controller.text = text;
+                    });
+                  },
+                  onEditingComplete: () => _controller.clear(),
+                  onSubmitted: (value) {
+                    number = value;
+                    //detailsProvider.setNumberOfStudentents(value);
+                    FocusScope.of(context).unfocus();
+                    _controller.text = "";
+                    _controller.clear();
+                    setState(() {});
+                  },
+                ),
+              )),
               // Expanded(child: child)
             ],
           ),
