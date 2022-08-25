@@ -26,25 +26,27 @@ class UniversityDetails extends StatefulWidget {
 
 class _UniversityDetailsState extends State<UniversityDetails> {
   String number = '';
+  late TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _controller.dispose();
+    // controller2.dispose();
+  }
 
   //TextEditingController controller2;
-  late TextEditingController _controller;
+
   @override
   Widget build(BuildContext context) {
     final detailsProvider =
         Provider.of<DetailsViewModel>(context, listen: true);
-
-    @override
-    void initState() {
-      _controller = TextEditingController();
-      super.initState();
-    }
-
-    void dispose() {
-      _controller.dispose();
-      // controller2.dispose();
-      super.dispose();
-    }
 
     return Scaffold(
         appBar: AppBar(
