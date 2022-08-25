@@ -86,38 +86,30 @@ class _UniversityDetailsState extends State<UniversityDetails> {
                   )),
               Expanded(
                   child: ListTile(
-                // trailing: TextButton(
-                //     onPressed: () => detailsProvider
-                //         .setNumberOfStudentents(controller.value.text),
-                //     child: const Text('Submit')),
                 title: TextField(
-                  //  controller: controller,
+                  controller: _controller,
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   decoration: InputDecoration(
                     hintText: 'Enter a message',
                     suffixIcon: IconButton(
                       onPressed: () {
-                        _controller.text = '';
-                        _controller.clear();
-                        setState(() {});
+                        setState(() {
+                          _controller.clear();
+                        });
                       },
                       icon: const Icon(Icons.clear),
                     ),
                   ),
                   onChanged: (text) {
-                    setState(() {
-                      // _controller.text = text;
-                    });
+                    setState(() {});
                   },
-                  onEditingComplete: () => _controller.clear(),
                   onSubmitted: (value) {
                     number = value;
-                    //detailsProvider.setNumberOfStudentents(value);
                     FocusScope.of(context).unfocus();
-                    _controller.text = "";
-                    _controller.clear();
-                    setState(() {});
+                    setState(() {
+                      _controller.clear();
+                    });
                   },
                 ),
               )),
